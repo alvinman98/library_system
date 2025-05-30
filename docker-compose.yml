@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    container_name: library_web
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      FLASK_APP: run.py
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/library_db
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: "1f1f7d5176f6b775771985cbb53076d8b91c4f6e0a4912cc547e03cf0b66d6e8abfa37436081ed48a125b2056972dac20bd8876383e852a29dfaf5d754cadb725f11e0d2745ed2e18cb01ccf3332442be604bf52418e5bd9dcd902ecb31be7afc4848dd8d7bf98ca968638d53bbd84796aeaeada54be59e3b5c65150e99a17deaeca1b7270f98d14df2e5db3bc1d10f15c5a39c83b8ee6059cca2e47e6360b5cb7c718616315568226b99b3b834e8f7eecb7e17877a99ae5aefa4ef2a1c689c78af4d4f510e82be5b29296f8260beeed3b76ba937c88f6e8eea853e03c53507ef6a5276ef9b8831c8ad85310ad83fb8f7e73a8a1b86884c9c2adceaa4ffbaedd"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:14
+    container_name: library_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: library_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    container_name: library_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
